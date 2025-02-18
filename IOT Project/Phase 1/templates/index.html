@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Dashboard</title>
+    <style>
+        #led {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: gray;
+        }
+        #led.on {
+            background-color: green;
+        }
+        #led.off {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>IoT Dashboard</h1>
+    <p>Switch Status: <span id="switch-status">OFF</span></p>
+    <button id="toggle-button">Toggle Switch</button>
+    <div>
+        <h2>LED Status:</h2>
+        <div id="led" class="off"></div>
+    </div>
+    
+    <script>
+        //by default the switch is off because the switch status is also off if they were to not have the same values, they will act weirdly (OFF for green color, etc)
+        let ledStatus = 'OFF';
+
+        //if button is clicked:
+        document.getElementById('toggle-button').addEventListener('click', () => {
+            // Toggle the switch status. it checks what the status is and does the opposite
+            //if its off makes it on
+            if (ledStatus === 'OFF') {
+                ledStatus = 'ON';
+            } 
+            //if on make it off
+            else {
+                ledStatus = 'OFF';
+            }            
+            //Change the  switch status to whatever the led status is on or off.
+            // ex: Switch Status: OFF/ON
+            document.getElementById('switch-status').textContent = ledStatus;
+            //change the LED COLOR ON SCREEN
+            document.getElementById('led').className = ledStatus.toLowerCase();
+            
+            // Send a request to the Flask backend to update the LED status
+            fetch(`/toggle_led?status=${ledStatus}`).then(response => response.json())
+                .then(data => {
+                    console.log(data.message);
+                });
+        });
+    </script>
+</body>
+</html>
