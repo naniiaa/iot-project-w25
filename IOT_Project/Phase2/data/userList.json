@@ -1,0 +1,29 @@
+{
+    "": [{
+        "username": "Jonkler",
+        "profile_image": "lnk",
+        "temperature_threshold": 20,
+        "intensity_threshold": 2000
+    }],
+
+    "2317caf7": [{
+        "username": "Joseph",
+        "profile_image": "lnk",
+        "temperature_threshold": 20,
+        "intensity_threshold": 2000
+    }],
+
+    "3339cbf7": [{
+        "username": "Willit",
+        "profile_image": "lnk",
+        "temperature_threshold": 20,
+        "intensity_threshold": 2000
+    }],
+
+    "23c3ccf7": [{
+        "username": "Arjun",
+        "profile_image": "lnk",
+        "temperature_threshold": 20,
+        "intensity_threshold": 2000
+    }]
+}
