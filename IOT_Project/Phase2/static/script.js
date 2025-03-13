@@ -59,12 +59,9 @@ function clearNotification()
 async function updateHumTemp() {
     try {
         const response = await fetch('/temp-hum');
-        
-    
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
 
         const tempData = parseFloat(data.temperature);
@@ -74,16 +71,16 @@ async function updateHumTemp() {
             throw new Error('Invalid data received from the server.');
         }
 
-        console.log(data);
         setHumidity(humData);
         setTemperature(tempData);
 
+        // Update fan status on the dashboard
         if (data.fan) {
-            fanImg.src = fanOn_url;
+            fanImg.src = "../static/FanOn.png";  // Replace with your fan ON image
             fanImg.classList.add("spin_animation");
         } else {
+            fanImg.src = "../static/FanOff.png";  // Replace with your fan OFF image
             fanImg.classList.remove("spin_animation");
-            fanImg.src = fanOff_url;
         }
 
     } catch (error) {

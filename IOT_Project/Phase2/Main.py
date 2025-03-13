@@ -1,11 +1,7 @@
-import asyncio
 from flask import Flask, jsonify, render_template
-
-#import LED
+import atexit
 import TempHumManager as THM
 import MotorFunction as Motor
-#import Profile_Manager
-#import MQTT_Manager
 
 app = Flask(__name__)
 
@@ -15,12 +11,15 @@ def index():
 
 @app.route('/temp-hum')
 def get_TH_data():
-    return jsonify(THM.get_sensor_data()) # Grabs the DHT data from the TempHumManager file and converts it into json for Javascript.
+    return jsonify(THM.get_sensor_data())  # Grabs the DHT data and converts it into JSON
 
 @app.route('/toggle-off')
 def fan_off():
     Motor.toggle(False)
-    return False
+    return jsonify({"status": "Fan turned off"})
+
+# Cleanup GPIO on exit
+atexit.register(Motor.cleanup)
 
 if __name__ == '__main__':
     try:

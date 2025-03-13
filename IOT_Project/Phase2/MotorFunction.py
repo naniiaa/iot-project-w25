@@ -1,24 +1,17 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
+# GPIO pin configuration
+MOTOR_PIN = 18  # Replace with the GPIO pin you're using
+
+# Setup GPIO
 GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-Motor1 = 22 # Enable Pin
-Motor2 = 27 # Input Pin
-Motor3 = 17 # Input Pin
-
-
-GPIO.setup(Motor1,GPIO.OUT)
-GPIO.setup(Motor2,GPIO.OUT)
-GPIO.setup(Motor3,GPIO.OUT)
+GPIO.setup(MOTOR_PIN, GPIO.OUT)
 
 def toggle(state):
+    """Turn the motor on or off."""
+    GPIO.output(MOTOR_PIN, GPIO.HIGH if state else GPIO.LOW)
 
-    if state:
-        GPIO.output(Motor1,GPIO.HIGH)
-        GPIO.output(Motor2,GPIO.LOW)
-        GPIO.output(Motor3,GPIO.HIGH)
-    else:
-        GPIO.output(Motor1,GPIO.LOW)
-        GPIO.output(Motor2,GPIO.LOW)
-        GPIO.output(Motor3,GPIO.LOW)
+# Cleanup GPIO on exit
+def cleanup():
+    GPIO.cleanup()
