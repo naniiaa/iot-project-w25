@@ -7,11 +7,12 @@
   integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc="
   crossorigin="anonymous"></script>
 
-<script src="../static/script.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+  <script src="../static/script.js" defer></script>
+  <script src="../static/graph.js" defer></script>
 
   <link rel="stylesheet" href="../static/styles.css">
-
-
 
 </head>
 
@@ -23,14 +24,14 @@
   </div>
 
   <div class="content">
- 
+    <!--
     <div class="dashboard-extra">
 
       <div class="profile-tab">
         <img id="profile_img" src="https://ichef.bbci.co.uk/ace/standard/1056/cpsprodpb/13FCD/production/_130896818_donaldtrumpfullmugshot.jpg" width="150" height="150">
         <div id="profile_information">
           <div id="profile_name">Username: Cheetoh Dust</div>
-          <div id="TT">Temperature Threshold: 24 °C</div>
+          <div id="TT">Temperature Threshold: 65 °C</div>
           <div id="LT">Light Threshold: 3050</div>
         </div>   
       </div>
@@ -54,61 +55,65 @@
         </div>
       </div>
 
-    </div>
+    </div>-->
 
     <div class="IOT-Dashboard">
 
+      <div class="dashboard-component" id="graph-dashboard">
+
+        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+
+      </div>
+
       <div class="dashboard-component" id="temphum-dashboard">
     
-        <div class="temphum-dashboard-component" id="temperature-db">
+        <div class="temphum-dashboard-component TH" id="temperature-db" onload="addBars()">
           <h4>Temperature</h4>
-          <div class="gauge" onclick="setGaugeValue(0.05)">
-              <div id="gauge__body">
-                  <div id="gauge__fill"></div>
-                  <div id="gauge__cover">0</div>
-              </div>
+          <div class="BarContainer" id="TemperatureMeter">
+
           </div>
         </div>
 
-        <div class="temphum-dashboard-component" id="fan-db">
-          <h4>Fan</h4>
-          <div id="fanContainer" style="margin: auto; width: 100px;">
-            <img id="fanIcon" src="../static/FanOff.png" height="100" width="100">
-          </div>
-        </div>
+        
 
-        <div class="temphum-dashboard-component" id="humidity-db">
+        <div class="temphum-dashboard-component TH" id="humidity-db">
           <h4>Humidity</h4>
-          <div id="fu-progress" onclick="updateHumidity()">   
-            <div id="fu-inner">
-              <div id="fu-percent"><span>0</span>%</div>
-              <div id="water"></div>
-            </div>
+          <div class="BarContainer" id="HumidityMeter">
+
           </div>
         </div>
 
+
+        
+
       </div>
 
-      <div class="dashboard-component" id="lightbulb-db">
+      <div class="dashboard-component" id="light-dashboard">
         <h4>LED</h4>
-        <div id="LB-body">
-
-            <img id="LB-img" src="../static/lightbulb-21.png">
-            <div id="LB-cover"></div></img>
-        </div>
-        <br>
-        <span id="LEDValue">0</span>
-        <div class="slidecontainer" style="display: inline-flex; align-items: center;">
-          <img src="../static/LED_Low.png" width="25" height="25">
-          <input readonly type="range" min="0" max="5000" value="0" class="slider" id="LED_slider">
-          <img src="../static/LED_High.png" width="25" height="25">
-        </div>
-        <div id="mail_notif">
-          <img id="img_notif" src="../static/MailIdle.png">
-          <span id="notif""></span>
-        </div>
+          <div id="LB-body">
+  
+              <img id="LB-img" src="../static/lightbulb-21.png">
+              <div id="LB-cover"></div></img>
+          </div>
+          <br>
+          <span id="LEDValue">0</span>
+          <div class="slidecontainer" style="display: inline-flex; align-items: center;">
+            <img src="../static/LED_Low.png" width="25" height="25">
+            <input readonly type="range" min="0" max="5000" value="0" class="slider" id="LED_slider">
+            <img src="../static/LED_High.png" width="25" height="25">
+          </div>
+          <div id="mail_notif">
+            <img id="img_notif" src="../static/MailIdle.png">
+            <span id="notif""></span>
+          </div>
       </div>
 
+      <div class="dashboard-component" id="fan-db">
+        <h4>Fan</h4>
+        <div id="fanContainer" style="margin: auto; width: 250px;">
+          <img id="fanIcon" src="../static/FanOff.png" height="250" width="250">
+        </div>
+      </div>
     </div>
   </div>
     
