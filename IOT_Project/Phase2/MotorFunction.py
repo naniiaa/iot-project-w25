@@ -1,17 +1,31 @@
 import RPi.GPIO as GPIO
+import THM2 as THM
 from time import sleep
 
-# GPIO pin configuration
-MOTOR_PIN = 18  # Replace with the GPIO pin you're using
-
-# Setup GPIO
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(MOTOR_PIN, GPIO.OUT)
+GPIO.setwarnings(False)
+Motor1 = 17 # Enable Pin
+Motor2 = 27 # Input Pin
+Motor3 = 22 # Input Pin
+
+
+GPIO.setup(Motor1,GPIO.OUT)
+GPIO.setup(Motor2,GPIO.OUT)
+GPIO.setup(Motor3,GPIO.OUT)
 
 def toggle(state):
-    """Turn the motor on or off."""
-    GPIO.output(MOTOR_PIN, GPIO.HIGH if state else GPIO.LOW)
 
-# Cleanup GPIO on exit
+    if state:
+        GPIO.output(Motor1,GPIO.HIGH)
+        GPIO.output(Motor2,GPIO.LOW)
+        GPIO.output(Motor3,GPIO.HIGH)
+    else:
+        THM.disableFan()
+        GPIO.output(Motor1,GPIO.LOW)
+        GPIO.output(Motor2,GPIO.LOW)
+        GPIO.output(Motor3,GPIO.LOW)
+
+    #return jsonify({'success': True, 'fan': fan_on})
+
 def cleanup():
     GPIO.cleanup()

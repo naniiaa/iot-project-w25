@@ -61,6 +61,7 @@ def get_sensor_data():
         # Check if the user replied YES
         if email_sent:
             reply = EM.check_user_reply()
+            logger.info(f"User replied: {reply}, Fan is on: {fan_on}")
             if reply == "YES" and not fan_on:
                 enableFan()
             elif reply == "NO" and fan_on:
