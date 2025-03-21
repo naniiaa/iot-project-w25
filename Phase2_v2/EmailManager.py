@@ -9,10 +9,12 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('email_manager')
 
-Sender_Email = "seconddummytwo@gmail.com"  # Replace with your email
-Key = "lugt toyl jqza ffag"  # Replace with your email password or passkey
-Receiver_Email = "templatebuttondown@gmail.com" #"example@gmail.com"
-
+Sender_Email = "centrobridjette@gmail.com"  # Replace with your email
+# seconddummytwo@gmail.com
+Key = "fmhw shoy zuwx coqj"  # Replace with your email password or passkey
+# lugt toyl jqza ffag
+Receiver_Email = "centrobridjette@gmail.com" #"example@gmail.com"
+# templatebuttondown@gmail.com
 def email_notification(message):
     """Send an email notification to the user."""
     try:

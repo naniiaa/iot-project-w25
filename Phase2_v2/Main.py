@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, render_template
 import atexit
-#import TempHumManager as THM
+# import TempHumManager as THM
 import THM2 as THM
 import MotorFunction as Motor
 import Freenove_DHT as dht_sensor

@@ -290,4 +290,4 @@ function transmitData()
 setThreshold();
 loadBars();
 transmitData();
-setInterval(transmitData, 500);
+setInterval(transmitData, 60000);

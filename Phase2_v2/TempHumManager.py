@@ -13,7 +13,7 @@ fan_on = False
 last_email_time = 0
 
 # Initialize the DHT sensor
-DHT_PIN = 23
+DHT_PIN = 4
 
 dht_sensor = DHT.DHT(DHT_PIN)  # Assuming the sensor is connected to GPIO pin 17
 

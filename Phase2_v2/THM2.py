@@ -3,7 +3,7 @@ import Freenove_DHT as DHT
 import MotorFunction as Motor
 import EmailManager as EM
 
-DHTPin = 23 #define the pin of DHT11
+DHTPin = 4 #define the pin of DHT11
 
 dht = DHT.DHT(DHTPin) #create a DHT class object
  # Measurement counts
@@ -30,11 +30,12 @@ def get_sensor_data():
     temperature_data = dht.getTemperature()
     humidity_data = dht.getHumidity()
 
-    if (temperature_data > 20 and not email_sent and not fan_on):
+    if (temperature_data > 24 and not email_sent and not fan_on):
         print("email sent.")
         email_sent = True
-        print(email_sent)
-        msg = "The temperature has breached the threshold. Would you like to turn the fan on?"
+        print(email_sent) 
+        # parsing the actual temp data in the msg
+        msg = f"The temperature has breached the threshold of {temperature_data}. Would you like to turn the fan on?"
         EM.email_notification(msg)
 
     if (email_sent and not fan_on):
