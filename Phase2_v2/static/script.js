@@ -52,8 +52,9 @@ function isInRange(value, min, max)
     return false;
 }
 
-const last_Temp = 0;
-const last_Hum = 0;
+let last_Temp = 0;
+let last_Hum = 0;
+
 function setTHMeters(T_Value=0, H_Value=0)
 {
     const temperature_meter = document.getElementById("TemperatureMeter").getElementsByClassName("Bar");
@@ -88,7 +89,7 @@ function setTHMeters(T_Value=0, H_Value=0)
                 let bar = temperature_meter[39-i];
                 bar.style.opacity = 1;
                 bar.style.backgroundColor = "red";
-                document.getElementById("TemperatureMeterCounter").innerHTML = Math.floor(T_Value) + " °C";
+                document.getElementById("TemperatureMeterCounter").innerHTML = Math.floor(last_Temp) + " °C";
             }
 
 	let humidity_bar_percentage = Math.floor(40 * (last_Hum/100));
@@ -98,7 +99,7 @@ function setTHMeters(T_Value=0, H_Value=0)
                 let bar = humidity_meter[39-i];
                 bar.style.opacity = 1;
                 bar.style.backgroundColor = "cyan";
-                document.getElementById("HumidityMeterCounter").innerHTML = Math.floor(H_Value) + "%";
+                document.getElementById("HumidityMeterCounter").innerHTML = Math.floor(last_Hum) + "%";
             }
     }
 }
@@ -246,7 +247,7 @@ function setThreshold(TT, HT)
   hum_treshold.splice(0);
   for (i = 0; i < 13; i++)
   {
-    temp_treshold.push(20);
+    temp_treshold.push(23);
     hum_treshold.push(15);
   }
 }

@@ -30,7 +30,7 @@ def get_sensor_data():
     temperature_data = dht.getTemperature()
     humidity_data = dht.getHumidity()
 
-    if (temperature_data > 24 and not email_sent and not fan_on):
+    if (temperature_data > 23 and not email_sent and not fan_on):
         print("email sent.")
         email_sent = True
         print(email_sent) 

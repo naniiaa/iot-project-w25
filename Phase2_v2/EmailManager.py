@@ -4,6 +4,7 @@ import email
 import re
 import time
 import logging
+from datetime import date
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -27,9 +28,9 @@ def email_notification(message):
             smtp.login(Sender_Email, Key)
             logger.info("Logged in successfully!")
 
-            subject = "Temperature Alert"
+            subject = "Temperature Alert" 
             body = message
-            msg = f"Subject: {subject}\n\n{body}"
+            msg = f"Subject: {subject} {date.today()}\n\n{body}"
 
             # Send email
             smtp.sendmail(Sender_Email, Receiver_Email, msg)
