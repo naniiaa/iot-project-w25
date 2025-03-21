@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index_v2.html')
 
 @app.route('/temp-hum')
 def get_TH_data():
