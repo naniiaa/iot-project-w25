@@ -43,17 +43,35 @@ function loadBars()
         }
 };
 
+function isInRange(value, min, max)
+{
+    if (value > min && value < max)
+    {
+        return true;
+    }
+    return false;
+}
+
+const last_Temp = 0;
+const last_Hum = 0;
 function setTHMeters(T_Value=0, H_Value=0)
 {
     const temperature_meter = document.getElementById("TemperatureMeter").getElementsByClassName("Bar");
     const humidity_meter = document.getElementById("HumidityMeter").getElementsByClassName("Bar");
-    
-    console.log('loggin');
-
+	
     if (temperature_meter && humidity_meter)
     {
 
-        newData(T_Value, H_Value);
+	if (isInRange(T_Value, 0, 40) && isInRange(H_Value, 0, 100))
+        {
+        	newData(T_Value, H_Value);
+		last_Temp = T_Value;
+		last_Hum = H_Value;
+        }
+	else
+	{
+		newData(last_Temp, last_Hum);
+	}
 
         for (let i = 0; i < 40; i++)
             {
@@ -65,7 +83,7 @@ function setTHMeters(T_Value=0, H_Value=0)
                 bar2.style.backgroundColor = "white";
             }
 
-        for (let i = 0; i < T_Value; i++)
+        for (let i = 0; i < last_Temp; i++)
             {
                 let bar = temperature_meter[39-i];
                 bar.style.opacity = 1;
@@ -73,7 +91,9 @@ function setTHMeters(T_Value=0, H_Value=0)
                 document.getElementById("TemperatureMeterCounter").innerHTML = Math.floor(T_Value) + " °C";
             }
 
-        for (let i = 0; i < H_Value; i++)
+	let humidity_bar_percentage = Math.floor(40 * (last_Hum/100));
+	    
+        for (let i = 0; i < humidity_bar_percentage; i++)
             {
                 let bar = humidity_meter[39-i];
                 bar.style.opacity = 1;
@@ -175,10 +195,10 @@ fanImg.addEventListener('click', async () => {
 //=================================================================== Graph
 
 
-const xValues = [0,5,10,15,20,25,30,35,40,45,50,55,60];
+const xValues = [];
 
-const temperature_data = [];//[860,1140,1060,1060,1070,1110,1330,2210,7830,2478];
-const humidity_data = [];//[300,700,2000,5000,6000,4000,2000,1000,200,100];
+const temperature_data = [];
+const humidity_data = [];
 
 const temp_treshold = [];
 const hum_treshold = [];
@@ -216,6 +236,7 @@ const chart = new Chart("myChart", {
         animation: false
       }
     });
+Chart.defaults.global.defaultFontColor = "#fff";
 
 let newX = 0;
 
@@ -232,44 +253,23 @@ function setThreshold(TT, HT)
 
 function newData(CurrentTemperature = 0, CurrentHumidity = 0)
 {
-	/*let lastData = xValues[xValues.length - 1];
-    xValues.shift();
-    xValues.push(lastData + 100);
-    temperature_data.shift();
-    humidity_data.shift();*/
-    switch(CurrentHumidity)
-    {
-      case CurrentHumidity>40:
-        CurrentHumidity = 40;
-        break;
-      case CurrentHumidity<0:
-        CurrentHumidity = 0;
-        break;
-      default:
-        break;
-    }
-
-    switch(CurrentTemperature)
-    {
-      case CurrentTemperature>40:
-        CurrentHumidity = 40;
-        break;
-      case CurrentTemperature<-10:
-        CurrentHumidity = -10;
-        break;
-      default:
-        break;
-    }
-
-    if (newX >= 13)
+	if (newX >= 13)
     {
         let lastData = xValues[xValues.length - 1];
-        xValues.shift();
-        xValues.push(lastData + 5);
+        xValues.shift();     
         //newX -= 50;
     }
+    else
+    {
+        newX++;
+    }
     
-    newX++;
+    let now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
+    xValues.push(`${hours}:${minutes}:${seconds}|`);
+	
     if (temperature_data.length >= 13 && humidity_data.length >= 13)
     {
         temperature_data.shift();
@@ -290,4 +290,4 @@ function transmitData()
 setThreshold();
 loadBars();
 transmitData();
-setInterval(transmitData, 60000);
+setInterval(transmitData, 1000);
