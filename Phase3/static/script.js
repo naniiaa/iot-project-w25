@@ -1,16 +1,23 @@
 var temperatureThreshold = 35;
-var lightThreshold = 2000;
+var lightThreshold = 400;
 var currentProfile;
 
-var slider = document.getElementById("LED_slider");
-var output = document.getElementById("LB-cover");
-var output_value = document.getElementById("LEDValue");
+// var slider = document.getElementById("LED_slider");
+// var output = document.getElementById("LB-cover");
+// var output_value = document.getElementById("LEDValue");
+
 var notif = document.getElementById("notif");
+
 var sentEmail = false;
 let lastEmailSent = false;
 let currentEmailSent = false;
 
-$("#img_notif").addClass('active');
+
+// Initialize light bulb images
+const LIGHT_OFF_IMG = "../static/LightOff.png";
+const LIGHT_ON_IMG = "../static/LightOn.png";
+
+// $("#img_notif").addClass('active');
 
 function clearNotification() {
     $("#img_notif").attr('src', "../static/MailIdle.png");
@@ -104,6 +111,105 @@ function setTHMeters(T_Value=0, H_Value=0)
     }
 }
 
+/*================ LIGHT =================================*/
+let last_Light = 0;
+
+// Update light intensity 
+function updateLightVisualization(intensity, ledStatus) {
+
+    // INTENSITY
+    const lightIntensityElement = document.getElementById("light-intensity");
+    if (lightIntensityElement) {
+        lightIntensityElement.textContent = intensity;
+    }
+    
+    // STATUS
+    const ledStatusElement = document.getElementById("led-status");
+    if (ledStatusElement) {
+        ledStatusElement.textContent = ledStatus;
+        ledStatusElement.className = ledStatus === "ON" ? "on" : "off";
+    }
+
+    // LIGHTBULB
+    const lightBulbImage = document.getElementById("light-bulb-img");
+    if (lightBulbImage) {
+        lightBulbImage.src = ledStatus === "ON" ? "/static/LightOn.png" : "/static/LightOff.png";
+        lightBulbImage.classList.remove("on");
+        if (ledStatus === "ON") {
+            lightBulbImage.classList.add("on");
+        }
+        
+        console.log(`Light bulb updated: status=${ledStatus}, src=${lightBulbImage.src}, classes=${lightBulbImage.className}`);
+    }
+    
+    // LIGHT NETER
+    const lightMeterFill = document.getElementById("light-meter-fill");
+    if (lightMeterFill) {
+        // Calculate percentage (0-2000 range)
+        const percentage = Math.min(100, Math.max(0, (intensity / 2000) * 100));
+        lightMeterFill.style.width = percentage + "%";
+    }
+
+    const thresholdValue = document.getElementById('threshold-value');
+    if(thresholdValue)
+    {
+        thresholdValue.textContent = lightThreshold;
+    }
+}
+
+// Fetch light intensity
+async function updateLightData() {
+    try {
+        const response = await fetch('/light-data');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Update light intensity
+        if (data.hasOwnProperty('light_intensity') && data.hasOwnProperty('led_status')) {
+            const lightIntensity = data.light_intensity;
+            const ledStatus = data.led_status;
+
+            last_Light = lightIntensity;
+            
+            // Update visualizations
+            updateLightVisualization(lightIntensity, ledStatus);
+        }
+        
+        // Update threshold display
+        if (data.hasOwnProperty('light_threshold')) {
+            const thresholdValue = document.getElementById('threshold-value');
+            if (thresholdValue) {
+                thresholdValue.textContent = data.light_threshold;
+                lightThreshold = data.light_threshold;
+            }
+        }
+        
+        // Check for email status
+        if (data.hasOwnProperty('light_email_sent')) {
+            const isEmailSent = data.light_email_sent;
+            const imgElement = document.getElementById('img_notif');
+            const notifElement = document.getElementById('notif');
+            
+            if (isEmailSent) {
+                imgElement.src = "../static/MailSent.png";
+                notifElement.innerHTML = "Light Alert Email sent!";
+                imgElement.classList.add('active');
+            } else {
+                imgElement.src = "../static/MailIdle.png";
+                notifElement.innerHTML = "Email has not been sent";
+                imgElement.classList.remove('active');
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error fetching light data:', error);
+    }
+}
+
+
 async function updateHumTemp() {
     try {
         const response = await fetch('/temp-hum');
@@ -158,6 +264,7 @@ async function updateHumTemp() {
     }
 }
 
+/*================ MAIL NOTIF =================================*/
 function updateMailNotification(isEmailSent) {
     const imgElement = document.getElementById('img_notif');
     const notifElement = document.getElementById('notif');
@@ -166,10 +273,12 @@ function updateMailNotification(isEmailSent) {
         // Shows that at email has been sent
         imgElement.src = "../static/MailSent.png";
         notifElement.innerHTML = "Email sent!";
+        imgElement.classList.add('active');
     } else {
         // No email or idle state
         imgElement.src = "../static/MailIdle.png";
         notifElement.innerHTML = "";
+        imgElement.classList.remove('active');
     }
 }
 
@@ -283,12 +392,21 @@ function newData(CurrentTemperature = 0, CurrentHumidity = 0)
     chart.update("none");
 }
 
-function transmitData()
+function logData()
 {
+    console.log("Light intensity:", last_Light);
+    console.log("LED Status:", document.getElementById("led-status").textContent);
+    console.log("Threshold", lightThreshold);
+}
+// Update function to call both data updates
+function updateAllData() {
     updateHumTemp();
+    updateLightData();
+    logData();
 }
 
 setThreshold();
 loadBars();
-transmitData();
-setInterval(transmitData, 1000);
+//transmitData();
+setInterval(updateAllData, 1000);
+

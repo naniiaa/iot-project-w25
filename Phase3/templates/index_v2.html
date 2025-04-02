@@ -31,11 +31,31 @@
           <div class="BarContainer" id="HumidityMeter"></div>
         </div>
       </div>
-
+      
       <div class="dashboard-component" id="light-dashboard">
         <h4>Light Intensity</h4>
-        <p>Current Light Intensity: <span id="light-intensity">--</span></p>
-        <p>LED Status: <span id="led-status">OFF</span></p>
+        
+        <div class="light-visualization">
+          <div class="light-bulb-container">
+            <img id="light-bulb-img" src="../static/LightOff.png" alt="Light Bulb" class="light-bulb">
+          </div>
+          <div class="light-data">
+            <p>Current Light Intensity: <span id="light-intensity">--</span></p>
+            <p>LED Status: <span id="led-status" class="off">OFF</span></p>
+            <p>Threshold: <span id="threshold-value">400</span></p>
+          </div>
+        </div>
+        
+        <div class="light-meter-container">
+          <div class="light-meter">
+            <div class="meter-fill" id="light-meter-fill"></div>
+          </div>
+          <div class="meter-labels">
+            <span>Dark (0)</span>
+            <span>Bright (2000)</span>
+          </div>
+        </div>
+
         <div id="mail_notif">
           <img id="img_notif" src="../static/MailIdle.png">
           <span id="notif">Email has not been sent</span>

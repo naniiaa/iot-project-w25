@@ -177,6 +177,8 @@ cursor: pointer;
   width: 75px;
   margin: auto;
   margin-top: 75px;
+  height: auto;
+  overflow: visible;
 }
 
 #img_notif {
@@ -245,4 +247,140 @@ background: #ffffff;
 
 #img_notif.active {
   animation: pulse 1.5s infinite;
+}
+
+/*================ LIGHT  =================================*/
+#light-dashboard {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: auto;
+  overflow: visible,
+}
+
+.light-visualization {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.light-bulb-container {
+  flex: 0 0 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.light-bulb {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+
+.light-data {
+  flex: 1;
+  color: white;
+  margin-left: 20px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.light-data p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+#light-intensity {
+  font-weight: bold;
+  color: #FFEB3B;
+  font-size: 18px;
+}
+
+#led-status {
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+#led-status.on {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#led-status.off {
+  background-color: #F44336;
+  color: white;
+}
+
+#threshold-value {
+  font-weight: bold;
+  color: #FFEB3B;
+}
+
+.light-meter-container {
+  margin: 15px 0 25px 0;
+}
+
+.light-meter {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 5px;
+  border: 1px solid #555;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.meter-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, #F44336, #FFEB3B, #4CAF50);
+  transition: width 0.5s ease;
+}
+
+.meter-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #aaa;
+  font-size: 0.8em;
+  padding: 0 5px;
+}
+
+#mail_notif {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+#img_notif {
+  height: 50px;
+  width: 75px;
+  margin-bottom: 10px;
+}
+
+#notif {
+  display: block;
+  color: #FFEB3B;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 10px;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  width: 80%;
+}
+
+@keyframes glow {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+  100% { filter: brightness(1); }
+}
+
+.light-bulb.on {
+  animation: glow 2s infinite;
 }

@@ -4,8 +4,7 @@ import email
 import re
 import time
 import logging
-import paho.mqtt.client as mqtt
-from datetime import date
+from datetime import datetime
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -15,18 +14,43 @@ Sender_Email = "centrobridjette@gmail.com"
 Key = "fmhw shoy zuwx coqj"  # App password
 Receiver_Email = "centrobridjette@gmail.com"
 
-# MQTT Setup
-MQTT_BROKER = "BROKER_IP_ADDRESS"  # Replace with actual broker IP
-MQTT_PORT = 1883
-MQTT_TOPIC_LIGHT = "sensor/light"
-MQTT_TOPIC_EMAIL = "sensor/email"
-LIGHT_THRESHOLD = 400  # Below this value, send an alert
+# Email Types and Status Tracking
+EMAIL_TYPES = {
+    'TEMPERATURE': {
+        'subject': 'Temperature Alert',
+        'cooldown': 300,  # No minutes cooldown between temperature emails
+        'last_sent': 0,
+        'status': False
+    },
+    'LIGHT': {
+        'subject': 'Light Alert',
+        'cooldown': 300,  # No minutes cooldown between light emails
+        'last_sent': 0,
+        'status': False
+    }
+}
 
-
-def email_notification(message):
+def email_notification(message, subject=None, email_type = 'TEMPERATURE'):
     """Send an email notification to the user."""
+
+        # Validate email type
+    if email_type not in EMAIL_TYPES:
+        logger.error(f"Invalid email type: {email_type}")
+        return False
+    
+    # Use default subject if none provided
+    if subject is None:
+        subject = EMAIL_TYPES[email_type]['subject']
+    
+    # Check cooldown period
+    current_time = time.time()
+
+    if EMAIL_TYPES[email_type]['status'] and (current_time - EMAIL_TYPES[email_type]['last_sent'] < EMAIL_TYPES[email_type]['cooldown']):
+        logger.info(f"Email cooldown active for {email_type}. Skipping notification.")
+        return False
+    
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
             smtp.ehlo()
             smtp.starttls()
             logger.info("Connected to the SMTP server")
@@ -35,48 +59,63 @@ def email_notification(message):
             smtp.login(Sender_Email, Key)
             logger.info("Logged in successfully!")
 
-            subject = "Light Alert"
-            body = message
-            msg = f"Subject: {subject} {date.today()}\n\n{body}"
+            current_date = datetime.now().strftime("%Y-%m-%d")
+
+            # Format email
+            formatted_msg = f"Subject: {subject} {current_date}\n\n{message}"
 
             # Send email
-            smtp.sendmail(Sender_Email, Receiver_Email, msg)
-            logger.info("Email sent successfully!")
-            return True
+            smtp.sendmail(Sender_Email, Receiver_Email, formatted_msg)
+            logger.info(f"{email_type} sent successfully!")
 
+            # Update status
+            EMAIL_TYPES[email_type]['status'] = True
+            EMAIL_TYPES[email_type]['last_sent'] = current_time
+
+            return True
+        
     except Exception as e:
-        logger.error(f"Error sending email: {e}")
+        logger.error(f"Error sending {email_type}: {e}")
         return False
 
-
-def check_user_reply():
+def check_user_reply(email_type='TEMPERATURE'):
     """Check the user's email reply for 'YES' or 'NO'."""
-    logger.info("Checking for email replies...")
+    logger.info(f"Checking for {email_type} replies...")
 
     try:
-        mail = imaplib.IMAP4_SSL("imap.gmail.com")
+        mail = imaplib.IMAP4_SSL('imap.gmail.com')
         mail.login(Sender_Email, Key)
-        mail.select("inbox")
+        mail.select('inbox')
 
         # Search for the latest email
-        status, messages = mail.search(None, "ALL")
+        status, messages = mail.search(None, 'ALL')
+        latest_email_id = messages[0].split()[-1]
 
         if not messages[0]:
             logger.info("No new messages found")
             return "NO"
-
+        
+        status, messages = mail.search(None, 'ALL')
         latest_email_id = messages[0].split()[-1]
 
         # Fetch the email content
-        status, msg_data = mail.fetch(latest_email_id, "(RFC822)")
+        status, msg_data = mail.fetch(latest_email_id, '(RFC822)')
 
         for response_part in msg_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
 
-                if "Light Alert" in msg.get("Subject", ""):
-                    logger.info("Found a reply to Light Alert")
+                # if "Temperature Alert" in msg.get("Subject",""):
+                #     logger.info("Found a reply to temperature alert")
 
+                subject = msg.get("Subject", "")
+                if EMAIL_TYPES[email_type]['subject'] not in subject:
+                    logger.info(f"Latest email is not a {email_type} reply")
+                    continue
+
+                logger.info(f"Found a reply to {email_type} alert")
+
+                # Get email body
                 if msg.is_multipart():
                     for part in msg.walk():
                         content_type = part.get_content_type()
@@ -88,55 +127,56 @@ def check_user_reply():
                 logger.info(f"Reply Content: {body[:100]}...")
 
                 # If YES or NO in reply
-                if re.search("yes", body.lower()):
+                if (re.search("yes", body.lower())):
                     logger.info("User replied YES")
                     return "YES"
-
-                elif re.search("no", body.lower()):
+                
+                # If reply found, but no YES, we return NO
+                elif (re.search("no", body.lower())):
                     logger.info("User replied NO")
                     return "NO"
-
+                
         logger.info("No relevant replies found")
         return "NO"
-
+    
     except Exception as e:
-        logger.error(f"Error checking email reply: {e}")
+        logger.info(f"Error checking email reply: {e}")
         return "NO"
 
 
-# MQTT Callback when a message is received
-def on_message(client, userdata, msg):
-    topic = msg.topic
-    payload = msg.payload.decode()
+def reset_email_status(email_type='TEMPERATURE'):
+    """Reset the sent status for a specific email type"""
+    if email_type not in EMAIL_TYPES:
+        logger.error(f"Invalid email type: {email_type}")
+        return False
+    
+    EMAIL_TYPES[email_type]['status'] = False
+    logger.info(f"Reset {email_type} email status")
+    return True
 
-    if topic == MQTT_TOPIC_LIGHT:
-        light_intensity = int(payload)
-        logger.info(f"Received Light Intensity: {light_intensity}")
+def get_email_status(email_type=None):
+    """Get email status for one or all email types"""
+    if email_type is not None:
+        if email_type not in EMAIL_TYPES:
+            logger.error(f"Invalid email type: {email_type}")
+            return {}
+        
+        return {
+            'status': EMAIL_TYPES[email_type]['status'],
+            'last_sent': EMAIL_TYPES[email_type]['last_sent'],
+            'cooldown': EMAIL_TYPES[email_type]['cooldown']
+        }
+    else:
+        # Return all email statuses
+        result = {}
+        for type_name, type_data in EMAIL_TYPES.items():
+            result[type_name.lower()] = {
+                'status': type_data['status'],
+                'last_sent': type_data['last_sent'],
+                'cooldown': type_data['cooldown']
+            }
+        return result
 
-        if light_intensity < LIGHT_THRESHOLD:
-            email_notification(f"Light intensity is too low: {light_intensity}. Do you want to turn off the alert?")
-            client.publish(MQTT_TOPIC_EMAIL, "Email Sent")
-
-    elif topic == MQTT_TOPIC_EMAIL:
-        logger.info(f"Received email response: {payload}")
-
-        if check_user_reply() == "YES":
-            logger.info("User confirmed. Taking action.")
-            # Perform action based on YES reply (e.g., stop further alerts)
-        else:
-            logger.info("No confirmation received. Keeping alert active.")
-
-
-# MQTT Setup
-mqtt_client = mqtt.Client()
-mqtt_client.on_message = on_message
-mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
-
-mqtt_client.subscribe(MQTT_TOPIC_LIGHT)
-mqtt_client.subscribe(MQTT_TOPIC_EMAIL)
-
-logger.info("Listening for MQTT messages...")
-mqtt_client.loop_forever()
-
-
-#pip install paho-mqtt smtplib RPi.GPIO
+def get_formatted_time():
+    """Get the current time formatted as HH:MM"""
+    return datetime.now().strftime("%H:%M")
