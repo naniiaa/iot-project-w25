@@ -29,11 +29,8 @@ function loadBars()
 {
     console.log("Loaded");
     const containers = document.getElementsByClassName("BarContainer");
-
-    for (let i = 0; i < containers.length; i++) {
-        
+    for (let i = 0; i < containers.length; i++) {      
             const tempDB = containers.item(i);
-
             for (let i = 0; i < 40; i++) {
                 console.log("Loading");
                 const bar = document.createElement("div");
@@ -41,12 +38,6 @@ function loadBars()
                 bar.id = `Bar_${40-i}`;
                 tempDB.appendChild(bar);
             }
-
-            const counter = document.createElement("div");
-            counter.className = "MeterCounter";
-            counter.id = tempDB.id + "Counter";
-            tempDB.appendChild(counter);
-
         }
 };
 
@@ -318,22 +309,26 @@ const chart = new Chart("myChart", {
       data: {
         labels: xValues,
         datasets: [{ 
+	  label: 'Temperature Data',
           data: temperature_data,
           lineTension: 0,
           borderColor: "red",
           fill: false,
-        }, { 
+        }, {
+	  label: 'Humidity Data',
           data: humidity_data,
           lineTension: 0,
           borderColor: "blue",
           fill: false,
-        }, { 
+        }, {
+	  label: 'Temperature Threshold',
           data: temp_treshold,
           lineTension: 0,
           borderColor: "pink",
           fill: false,
           pointStyle: "line"
         }, { 
+	  label: 'Humidity Threshold',
           data: hum_treshold,
           lineTension: 0,
           borderColor: "violet",
@@ -342,7 +337,7 @@ const chart = new Chart("myChart", {
         }]
       },
       options: {
-        legend: {display: false},
+        legend: {display: true},
         animation: false
       }
     });
