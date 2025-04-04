@@ -129,19 +129,13 @@ h4 {
 cursor: pointer;
 }
 
-#fanContainer {
-  position: relative;
-  left: 10%;
-  top: 5px;
-}
-
 .profileComponent {
   color: white;
   border: 1px solid rgb(7, 39, 0);
   background-color: #1b1b1b;
   border-radius: 25px;
   margin: auto;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .profileComponent > h4 {
@@ -151,20 +145,26 @@ cursor: pointer;
 #profileIMGHolder {
   width: 100px;
   height: 100px;
+  background-image: url("https://ichef.bbci.co.uk/ace/standard/1056/cpsprodpb/13FCD/production/_130896818_donaldtrumpfullmugshot.jpg");
+  background-size: contain;
 }
 
 #ThresholdContainer {
   display: block;
   width: 90%;
   height: 130px;
-  padding: 20px;
+  padding: 30px;
 }
 
 #NotificationContainer {
   display: block;
   width: 90%;
-  height: 200px;
-  padding: 20px;
+  height: 220px;
+  padding: 30px;
+}
+
+.notif {
+  margin: auto;
 }
 
 /*================ LED =================================*/
@@ -233,17 +233,16 @@ cursor: pointer;
   overflow: visible;
 }
 
-#img_notif {
+.img_notif {
   height: 50px;
   width: 75px;
 }
 
-#notif {
+.notifSpan {
   display: block;
   color: red;
   height: 50px;
-  width: 75px;
-  margin: auto;
+  width: 175px;
   margin-top: 25px;
   text-align: center;
 }
