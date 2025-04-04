@@ -109,6 +109,20 @@ h4 {
   width: 50px;
   text-align: center;
   font-family: "Lucida Console", "Courier New", monospace;
+  font-size: larger;
+  margin: auto;
+}
+
+.VisualDisplay_TH {
+  display: inline-flex;
+}
+
+#TemperatureMeterCounter {
+  float: left;
+}
+
+#HumidityMeterCounter {
+  float: right;
 }
 
 #fanIcon:hover {
