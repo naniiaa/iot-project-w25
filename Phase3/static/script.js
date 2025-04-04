@@ -181,8 +181,8 @@ async function updateLightData() {
         // Check for email status
         if (data.hasOwnProperty('light_email_sent')) {
             const isEmailSent = data.light_email_sent;
-            const imgElement = document.getElementById('img_notif');
-            const notifElement = document.getElementById('notif');
+            const imgElement = document.getElementById('led_img_n');
+            const notifElement = document.getElementById('ledspannotif');
             
             if (isEmailSent) {
                 imgElement.src = "../static/MailSent.png";
@@ -257,8 +257,8 @@ async function updateHumTemp() {
 
 /*================ MAIL NOTIF =================================*/
 function updateMailNotification(isEmailSent) {
-    const imgElement = document.getElementById('img_notif');
-    const notifElement = document.getElementById('notif');
+    const imgElement = document.getElementById('th_img_n');
+    const notifElement = document.getElementById('thspannotif');
     
     if (isEmailSent) {
         // Shows that at email has been sent
