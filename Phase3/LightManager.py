@@ -93,11 +93,7 @@ def check_light_threshold():
                 EM.reset_email_status('LIGHT')
 
 def set_led(state):
-    """Set the LED state
-    
-    Args:
-        state (bool): True to turn on, False to turn off
-    """
+    """Set the LED state with results such as True to turn on, False to turn off"""
     global led_status
     
     try:
