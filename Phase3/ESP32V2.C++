@@ -1,5 +1,9 @@
-#include <4.h>
+#include <WiFi.h>
 #include <PubSubClient.h>
+
+
+// const char* ssid = "Bridjette";
+// const char* password = "11223344";
 
 const char* ssid = "MEGA-2.4G-005327";
 const char* password = "53a16f64";
