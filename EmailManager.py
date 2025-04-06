@@ -27,6 +27,12 @@ EMAIL_TYPES = {
         'cooldown': 300,  # No minutes cooldown between light emails
         'last_sent': 0,
         'status': False
+    },
+    'RFID': {
+        'subject': 'User Entry Alert',
+        'cooldown': 30,
+        'last_sent': 0,
+        'status': False, 
     }
 }
 

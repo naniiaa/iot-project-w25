@@ -70,14 +70,35 @@
       </div>
 
       <div class="dashboard-component" id="profile-db">
+        
         <h4>Phase 4 WIP</h4>
-        <div class="profileComponent" id="profileIMGHolder"></div>
+
+        <div class="profileComponent" id="user-profile">
+          <h4>User Profile</h4>
+          <div class="profile-info">
+            <div class="profile-image-container">
+              <img id="profile_image" class="profile-img" src="" alt="Profile Image">
+            </div>
+            <div class="profile-details">
+              <p><strong>Username:</strong> <span id="profile_username">--</span></p>
+              <p><strong>RFID Tag:</strong> <span id="rfid_tag">--</span></p>
+              <p><strong>Last Entry:</strong> <span id="last_entry">--</span></p>
+            </div>
+          </div>
+        </div>
+
         <div class="profileComponent" id="ThresholdContainer">
+          <h4>User Thresholds</h4>
+          <p><strong>Temperature:</strong> <span id="user_temp_threshold">--</span> Â°C</p>
+          <p><strong>Light Intensity:</strong> <span id="user_light_threshold">--</span></p>
+        </div>
+
+        <!--<div class="profileComponent" id="ThresholdContainer">
           <h4>Tresholds</h4>
           <p>Light: <span id="threshold-value"></span></p>
           <p>Temperature: <span id=""></span></p>
           <p>Humidity: <span id=""></span></p>
-        </div>
+        </div>-->
         <div class="profileComponent" id="NotificationContainer">
           <h4>Notifications</h4>
           <p>Status: <span id="email-status">No email sent</span></p>

@@ -3,6 +3,7 @@ var temperatureThreshold = 35;
 var lightThreshold = 2000;
 var currentProfile;
 
+let lastRFIDtag
 // var slider = document.getElementById("LED_slider");
 // var output = document.getElementById("LB-cover");
 // var output_value = document.getElementById("LEDValue");
@@ -41,6 +42,73 @@ function loadBars()
             }
         }
 };
+
+// Variables to track RFID state
+let lastRfidTag = "";
+let rfidAnimationTimeout = null;
+
+// Function to fetch and update RFID data
+async function updateRFIDData() {
+    try {
+        const response = await fetch('/rfid-data');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const rfidData = await response.json();
+        
+        if (rfidData) {
+            // Check if the RFID tag has changed
+            if (rfidData.rfid_tag && rfidData.rfid_tag !== lastRfidTag) {
+                console.log("New RFID tag detected:", rfidData.rfid_tag);
+                lastRfidTag = rfidData.rfid_tag;
+                
+                // Add animation class
+                $("#user-profile").addClass("rfid-active");
+                
+                // Clear previous timeout if exists
+                if (rfidAnimationTimeout) clearTimeout(rfidAnimationTimeout);
+                
+                // Remove animation class after 3 seconds
+                rfidAnimationTimeout = setTimeout(() => {
+                    $("#user-profile").removeClass("rfid-active");
+                }, 3000);
+            }
+            
+            // Update RFID tag display
+            $('#rfid_tag').text(rfidData.rfid_tag || '--');
+            
+            // Update user profile
+            $('#profile_username').text(rfidData.username || 'Unknown');
+            $('#profile_name').text("User: " + (rfidData.username || 'Unknown'));
+            
+            // Update profile image
+            if (rfidData.profile_image) {
+                $('.profile-img').attr('src', rfidData.profile_image);
+            }
+            
+            // Update last entry time
+            $('#last_entry').text(rfidData.timestamp || '--');
+            
+            // Update thresholds
+            if (rfidData.temperature_threshold) {
+                $('#user_temp_threshold').text(rfidData.temperature_threshold);
+                temperatureThreshold = rfidData.temperature_threshold;
+                $("#TT").text(`Temperature Threshold: ${temperatureThreshold} Â°C`);
+            }
+            
+            if (rfidData.intensity_threshold) {
+                $('#user_light_threshold').text(rfidData.intensity_threshold);
+                lightThreshold = rfidData.intensity_threshold;
+                $("#LT").text(`Light Threshold: ${lightThreshold}`);
+                $('#threshold-value').text(lightThreshold);
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching RFID data:', error);
+    }
+}
 
 async function updateProfile()
 {

@@ -435,3 +435,51 @@ background: #ffffff;
 .light-bulb.on {
   animation: glow 2s infinite;
 }
+
+/* Add these styles to styles.css */
+
+#user-profile {
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.profile-image-container {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 2px solid #00aaff;
+  margin-right: 20px;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-details {
+  flex: 1;
+}
+
+.profile-details p {
+  margin: 5px 0;
+  color: #fff;
+}
+
+/* Styling for the RFID detection animation */
+@keyframes rfid-detected {
+  0% { border-color: #00aaff; box-shadow: 0 0 5px #00aaff; }
+  50% { border-color: #4CAF50; box-shadow: 0 0 20px #4CAF50; }
+  100% { border-color: #00aaff; box-shadow: 0 0 5px #00aaff; }
+}
+
+.rfid-active .profile-image-container {
+  animation: rfid-detected 2s ease-in-out;
+}

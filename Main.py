@@ -1,15 +1,19 @@
 from flask import Flask, jsonify, render_template
 import atexit
-# import TempHumManager as THM
 import THM2 as THM
 import MotorFunction as Motor
 import Freenove_DHT as dht_sensor
 import LightManager as LM
-import Profile_Manager
+import RFIDManager as RM
+import ProfileManager as PM
+import logging
 
-app = Flask(__name__)
+logger = logging.getLogger('main')
 
 LM.initialize()
+RM.initialize()
+
+app = Flask(__name__)
 
 @app.route('/')
 def index():
@@ -36,9 +40,24 @@ def get_light_data():
             'led_status': 'ERROR'
         })
 
+
+@app.route('/rfid-data')
+def get_rfid_data():
+    """Get RFID user profile data"""
+    try:
+        return jsonify(RM.get_rfid_data())
+    except Exception as e:
+        logger.error(f"Error getting RFID data: {e}")
+        return jsonify({
+            'error': str(e),
+            'rfid_tag': None,
+            'user_id': None,
+            'username': 'Unknown'
+        })
+    
 @app.route('/profile')
 def get_profile_data():
-    return jsonify(Profile_Manager.profileData())
+    return jsonify(PM.profileData())
 
 @app.route('/toggle-off')
 def fan_off():
@@ -96,7 +115,8 @@ def test_light():
 # Cleanup GPIO on exit
 def cleanup():
     Motor.cleanup()
-    LM.cleanup() 
+    LM.cleanup()
+    RM.cleanup()
 
 atexit.register(cleanup)
 

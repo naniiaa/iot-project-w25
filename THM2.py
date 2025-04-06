@@ -2,7 +2,7 @@ import time
 import Freenove_DHT as DHT
 import MotorFunction as Motor
 import EmailManager as EM
-from Profile_Manager import userTempThreshold
+from ProfileManager import userTempThreshold
 
 
 DHTPin = 4 # Define the pin of DHT11
