@@ -1,5 +1,5 @@
 var temperatureThreshold = 35;
-var lightThreshold = 400;
+var lightThreshold = 2000;
 var currentProfile;
 
 // var slider = document.getElementById("LED_slider");
@@ -137,7 +137,7 @@ function updateLightVisualization(intensity, ledStatus) {
     const lightMeterFill = document.getElementById("light-meter-fill");
     if (lightMeterFill) {
         // Calculate percentage (0-2000 range)
-        const percentage = Math.min(100, Math.max(0, (intensity / 2000) * 100));
+        const percentage = Math.min(100, Math.max(0, (intensity / 4000) * 100));
         lightMeterFill.style.width = percentage + "%";
     }
 
@@ -183,7 +183,7 @@ async function updateLightData() {
             const isEmailSent = data.light_email_sent;
             const imgElement = document.getElementById('led_img_n');
             const notifElement = document.getElementById('ledspannotif');
-            
+            console.log(`${isEmailSent}==================`)
             if (isEmailSent) {
                 imgElement.src = "../static/MailSent.png";
                 notifElement.innerHTML = "Light Alert Email sent!";

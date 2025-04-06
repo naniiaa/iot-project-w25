@@ -18,7 +18,7 @@ Receiver_Email = "centrobridjette@gmail.com"
 EMAIL_TYPES = {
     'TEMPERATURE': {
         'subject': 'Temperature Alert',
-        'cooldown': 300,  # No minutes cooldown between temperature emails
+        'cooldown': 10,  # No minutes cooldown between temperature emails
         'last_sent': 0,
         'status': False
     },
