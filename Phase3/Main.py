@@ -12,7 +12,7 @@ LM.initialize()
 
 @app.route('/')
 def index():
-    return render_template('index_v2.html')
+    return render_template('index.html')
 
 @app.route('/temp-hum')
 def get_TH_data():

@@ -10,11 +10,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger('light_manager')
 
 # Constants
-LIGHT_THRESHOLD = 400  # Default threshold
+LIGHT_THRESHOLD = 2000  # Default threshold
 LED_PIN = 12           # GPIO pin for LED
 
 # MQTT Setup
-MQTT_BROKER = "192.168.1.29"  # Replace with your broker IP
+MQTT_BROKER = "172.20.10.4"  # Replace with your broker IP
 MQTT_PORT = 1883
 MQTT_TOPIC_LIGHT = "sensor/light"
 MQTT_TOPIC_LED = "sensor/led"
