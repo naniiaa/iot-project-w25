@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-
+#include <SPI.h>
+#include <MFRC522.h>
 
 // const char* ssid = "Bridjette";
 // const char* password = "11223344";
@@ -39,7 +40,7 @@ void setup() {
   rfid.PCD_Init();
   Serial.println("Place your RFID card near the reader...");
 
-  
+
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
