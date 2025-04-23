@@ -15,7 +15,7 @@ LIGHT_THRESHOLD = userLightThreshold  # Default threshold
 LED_PIN = 12    # GPIO pin for LED
 
 # MQTT Setup
-MQTT_BROKER = "192.168.1.29" # "172.20.10.4"  # Replace with your broker IP
+MQTT_BROKER = "10.0.0.230" # "192.168.1.29" # "172.20.10.4"  # Replace with your broker IP
 MQTT_PORT = 1883
 MQTT_TOPIC_LIGHT = "sensor/light"
 MQTT_TOPIC_LED = "sensor/led"

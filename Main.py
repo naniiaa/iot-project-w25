@@ -1,128 +1,190 @@
 from flask import Flask, jsonify, render_template
 import atexit
+import logging
+import logging as logger
 import THM2 as THM
 import MotorFunction as Motor
 import Freenove_DHT as dht_sensor
 import LightManager as LM
 import RFIDManager as RM
 import ProfileManager as PM
-import logging
+from datetime import datetime
 
-logger = logging.getLogger('main')
-
-LM.initialize()
-RM.initialize()
 
 app = Flask(__name__)
 
+try:
+    logger.info("Initializing Light Manager...")
+    light_success = LM.initialize()
+    if light_success:
+        logger.info("Light Manager initialized successfully")
+    else:
+        logger.warning("Light Manager initialization failed or had issues")
+except Exception as e:
+    logger.error(f"Error initializing Light Manager: {e}")
+    light_success = False
+
+try:
+    logger.info("Initializing RFID Manager...")
+    rfid_success = RM.initialize()
+    if rfid_success:
+        logger.info("RFID Manager initialized successfully")
+    else:
+        logger.warning("RFID Manager initialization may have issues")
+except Exception as e:
+    logger.error(f"Error initializing RFID Manager: {e}")
+    rfid_success = False
+
+try:
+    Motor.toggle(False)
+    THM.disableFan()
+    logger.info("FAN NEEDS TO START OFF")
+except Exception as e:
+    logger.error(f"OFFF!!!!")
+    
 @app.route('/')
 def index():
+    """Render the index html page"""
+    logger.info("Serving index.html")
     return render_template('index.html')
 
 @app.route('/temp-hum')
 def get_TH_data():
-    return jsonify(THM.get_sensor_data())  # Grabs the DHT data and converts it into JSON
-
-# @app.route('/light-data')
-# def get_light_data():
-#     return jsonify(LM.get_sensor_data())  # Grabs the light intensity data and converts it into JSON
+    """Get temperature and humidity data"""
+    try:
+        data = THM.get_sensor_data()
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Error getting temperature data: {e}")
+        return jsonify({
+            'error': str(e),
+            'temperature': 0,
+            'humidity': 0,
+            'fan': False,
+            'email_sent': False,
+            'temperature_threshold': PM.userTempThreshold
+        })
 
 @app.route('/light-data')
 def get_light_data():
     """Get light intensity data"""
     try:
-        return jsonify(LM.get_sensor_data())
+        data = LM.get_sensor_data()
+        return jsonify(data)
     except Exception as e:
         logger.error(f"Error getting light data: {e}")
         return jsonify({
             'error': str(e),
-            'light_intensity': None,
-            'led_status': 'ERROR'
+            'light_intensity': 0,
+            'led_status': 'OFF',
+            'light_threshold': PM.userLightThreshold
         })
-
 
 @app.route('/rfid-data')
 def get_rfid_data():
     """Get RFID user profile data"""
     try:
-        return jsonify(RM.get_rfid_data())
+        # First check if MQTT is still connected
+        if rfid_success:
+            RM.check_mqtt_connection()
+        
+        # Get RFID data
+        rfid_data = RM.get_rfid_data()
+        return jsonify(rfid_data)
     except Exception as e:
         logger.error(f"Error getting RFID data: {e}")
+        # Return safe defaults on error
         return jsonify({
             'error': str(e),
-            'rfid_tag': None,
-            'user_id': None,
-            'username': 'Unknown'
+            'rfid_tag': "",
+            'user_id': "",
+            'username': "Default User",
+            'temperature_threshold': PM.userTempThreshold,
+            'intensity_threshold': PM.userLightThreshold,
+            'profile_image': "https://avatar.iran.liara.run/public/2",
+            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
     
 @app.route('/profile')
 def get_profile_data():
-    return jsonify(PM.profileData())
+    """Get current user profile data"""
+    try:
+        profile_data = PM.profileData()
+        return jsonify(profile_data)
+    except Exception as e:
+        logger.error(f"Error getting profile data: {e}")
+        return jsonify({
+            'error': str(e),
+            'userID': "",
+            'data': {
+                'username': "Default User",
+                'temperature_threshold': 20,
+                'intensity_threshold': 2000,
+                'profile_image': "https://avatar.iran.liara.run/public/2"
+            }
+        })
 
 @app.route('/toggle-off')
 def fan_off():
-    Motor.toggle(False)
-    return jsonify({"status": "Fan turned off"})
-
-# @app.route('/email-status')
-# def get_email_status():
-#     return jsonify({
-#         'email_sent': THM.email_sent,
-#         'last_email_time': THM.last_email_time if hasattr(THM, 'last_email_time') else None,
-#     })
+    """Turn off the fan"""
+    try:
+        Motor.toggle(False)
+        THM.disableFan()  # Make sure fan state is updated in THM
+        logger.info("Fan turned off")
+        return jsonify({"status": "Fan turned off", "success": True})
+    except Exception as e:
+        logger.error(f"Error turning fan off: {e}")
+        return jsonify({"status": "Error", "error": str(e), "success": False})
 
 @app.route('/email-status')
 def get_email_status():
-    # Get both temperature and light email statuses
-    light_data = LM.get_sensor_data()
-    
-    return jsonify({
-        'temp_email_sent': THM.email_sent,
-        'light_email_sent': light_data.get('light_email_sent', False),
-        'last_temp_email_time': THM.last_email_time if hasattr(THM, 'last_email_time') else None,
-        'last_light_email_time': light_data.get('last_light_email_time', 0),
-        'any_email_sent': THM.email_sent or light_data.get('light_email_sent', False)
-    })
-
-
-@app.route('/test-sensor')
-def test_sensor():
-    """Read directly from the sensor"""
-    chk = dht_sensor.readDHT11()
-    
-    if chk == 0:
-        temp = dht_sensor.getTemperature()
-        humid = dht_sensor.getHumidity()
+    """Get email notification status"""
+    try:
+        # Get both temperature and light email statuses
+        light_data = LM.get_sensor_data()
+        
+        status = {
+            'temp_email_sent': THM.email_sent,
+            'light_email_sent': light_data.get('light_email_sent', False),
+            'last_temp_email_time': THM.last_email_time if hasattr(THM, 'last_email_time') else None,
+            'last_light_email_time': light_data.get('last_light_email_time', 0),
+            'any_email_sent': THM.email_sent or light_data.get('light_email_sent', False)
+        }
+        
+        return jsonify(status)
+    except Exception as e:
+        logger.error(f"Error getting email status: {e}")
         return jsonify({
-            'success': True,
-            'temperature': temp,
-            'humidity': humid,
-            'temperature_type': str(type(temp)),
-            'humidity_type': str(type(humid))
+            'error': str(e),
+            'temp_email_sent': False,
+            'light_email_sent': False,
+            'any_email_sent': False
         })
-    else:
-        return jsonify({
-            'success': False,
-            'error_code': chk,
-            'error_message': 'Failed to read from sensor'
-        })
-    
-@app.route ('/test-light')
-def test_light():
-    """ Get current light sensor data for testing """
-    return jsonify(LM.get_sensor_data())
+
 
 # Cleanup GPIO on exit
 def cleanup():
-    Motor.cleanup()
-    LM.cleanup()
-    RM.cleanup()
+    """Clean up resources on exit"""
+    try:
+        logger.info("Cleaning up resources...")
+        Motor.cleanup()
+        LM.cleanup()
+        RM.cleanup()
+        logger.info("Cleanup complete")
+    except Exception as e:
+        logger.error(f"Error during cleanup: {e}")
 
 atexit.register(cleanup)
 
 if __name__ == '__main__':
     try:
-        app.run(host='127.0.0.1', port=5000)
+        logger.info("Starting Flask server on http://127.0.0.1:5000")
+        app.run(host='127.0.0.1', port=5000, debug=True)
     except KeyboardInterrupt:
-        cleanup()  # Make sure cleanup runs on keyboard interrupt
+        logger.info("Server shutting down due to keyboard interrupt")
+        cleanup() 
         exit()
+    except Exception as e:
+        logger.error(f"Server error: {e}")
+        cleanup()
+        exit(1)

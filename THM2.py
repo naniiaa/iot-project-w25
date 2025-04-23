@@ -22,6 +22,12 @@ def disableFan():
 def get_sensor_data():
     global email_sent, fan_on
 
+    if fan_on:
+        Motor.toggle(True)
+
+    else:
+        Motor.toggle(False)
+
     for i in range(0,15):
         # Read DHT11 sensor
         chk = dht.readDHT11() 

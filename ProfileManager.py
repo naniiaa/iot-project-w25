@@ -1,62 +1,152 @@
 import os
 from time import sleep
 import json
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger('profile_manager')
 
 import EmailManager
+
 profile_database = {
     "": {
-        "username": "Cheetoh Dust",
-        "profile_image": "https://ichef.bbci.co.uk/ace/standard/1056/cpsprodpb/13FCD/production/_130896818_donaldtrumpfullmugshot.jpg",
-        "temperature_threshold": 65,
-        "intensity_threshold": 1500
+        "username": "Default User",
+        "profile_image": "https://avatar.iran.liara.run/public/2",
+        "temperature_threshold": 20,
+        "intensity_threshold": 2000,
+    },
+    
+    "13a0a6a5": {
+        "username": "RFID User 1",
+        "profile_image": "https://avatar.iran.liara.run/public/60",
+        "temperature_threshold": 22,
+        "intensity_threshold": 1800
     },
 
-    "2317caf7": {
-        "username": "Joseph",
-        "profile_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJOa1VNqMvuPTMUwM9_MqGcGwBS8yozwlzmw&s",
-        "temperature_threshold": 30,
-        "intensity_threshold": 2000
+    "13eedf95": {
+        "username": "RFID User 2",
+        "profile_image": "https://avatar.iran.liara.run/public/80",
+        "temperature_threshold": 24,
+        "intensity_threshold": 2200
     },
-
-    "3339cbf7": {
-        "username": "Willit",
-        "profile_image": "https://i.imgflip.com/7pmzha.jpg",
-        "temperature_threshold": 21,
-        "intensity_threshold": 2300
-    },
-
 }
 
 userID = ""
-userTempThreshold = 65 #base value
-userLightThreshold = 1500 #base value
-    
+userTempThreshold = 20  # base value
+userLightThreshold = 2000  # base value
+
+def get_all_profiles():
+    """Return all available profiles for debugging"""
+    return profile_database
+
 def profileData():
-
-    payload = {
-        "userID": userID,
-        "tempThreshold": userTempThreshold,
-        "lightThreshold": userLightThreshold
-    }
-
-    if (profile_database[userID]): 
-        return { "userID": userID, "data": profile_database[userID]}
-    else:
-        return payload
+    """Return user profile data with consistent structure"""
+    try:
+        result = {
+            "userID": userID,
+            "data": {
+                "username": "Default User",
+                "profile_image": "https://avatar.iran.liara.run/public/2",
+                "temperature_threshold": userTempThreshold,
+                "intensity_threshold": userLightThreshold
+            }
+        }
+        
+        # Override with profile data if exists
+        if userID in profile_database:
+            result["data"] = profile_database[userID]
+            logger.info(f"Returning profile for user: {userID}")
+        else:
+            logger.info(f"Using default profile, userID '{userID}' not found")
+            
+        return result
+    except Exception as e:
+        logger.error(f"Error in profileData: {e}")
+        # Return a safe default with consistent structure
+        return {
+            "userID": "",
+            "data": {
+                "username": "Error",
+                "profile_image": "https://avatar.iran.liara.run/public/1",
+                "temperature_threshold": userTempThreshold,
+                "intensity_threshold": userLightThreshold
+            }
+        }
 
 def set_Profile():
-    if (profile_database[userID]): 
-        userProfile = profile_database[userID]
-        global userTempThreshold
-        userTempThreshold = userProfile['temperature_threshold']
-        global userLightThreshold
-        userLightThreshold = userProfile['intensity_threshold']
-        EmailManager.send_email_profile()
-    else:
-        print("Please add the user.")
+    """Set user profile based on userID"""
+    global userTempThreshold, userLightThreshold
+    
+    try:
+        # Check if userID exists 
+        if userID in profile_database:
+            userProfile = profile_database[userID]
+            
+            # Update  thresholds
+            userTempThreshold = userProfile['temperature_threshold']
+            userLightThreshold = userProfile['intensity_threshold']
+            
+            # Log update
+            logger.info(f"Profile set for user: {userID}")
+            logger.info(f"Temperature threshold: {userTempThreshold}")
+            logger.info(f"Light threshold: {userLightThreshold}")
+            
+            # Send email notif
+            try:
+                message = f"User profile updated: {userProfile['username']} at {EmailManager.get_formatted_time()}"
+                subject = f"Profile Update: {userProfile['username']}"
+                EmailManager.email_notification(message, subject=subject, email_type='RFID')
+            except Exception as email_error:
+                logger.error(f"Error sending profile email: {email_error}")
+        else:
+            logger.warning(f"User ID not found in profile database: {userID}")
+    except Exception as e:
+        logger.error(f"Error in set_Profile: {e}")
+
+def normalize_tag(tag):
+    """Fix RFID tag format"""
+    if not tag:
+        return ""
+    normalized = tag.strip().lower()
+    normalized = normalized.replace(':', '').replace('-', '').replace(' ', '')
+    logger.info(f"Normalized tag '{tag}' to '{normalized}'")
+    return normalized
 
 def set_UserID(mqtt_message):
+    """Set userID from MQTT message with tag format normalization"""
     global userID
-    userID = mqtt_message
-    set_Profile()
     
+    try:
+        if not mqtt_message:
+            logger.warning("Received empty MQTT message")
+            return
+            
+        # Normalize the tag 
+        normalized_tag = normalize_tag(mqtt_message)
+        
+        # Debug logging
+        logger.info(f"Received RFID tag: '{mqtt_message}', normalized to: '{normalized_tag}'")
+        logger.info(f"Available profiles: {list(profile_database.keys())}")
+        
+        # Look for exact match first
+        if normalized_tag in profile_database:
+            userID = normalized_tag
+            logger.info(f"Found exact profile match for: {userID}")
+        else:
+            # Try case-insensitive match
+            for key in profile_database.keys():
+                normalized_key = normalize_tag(key)
+                if normalized_key == normalized_tag:
+                    userID = key
+                    logger.info(f"Found case-insensitive match: {userID}")
+                    break
+            else:
+                # No match found
+                userID = normalized_tag
+                logger.warning(f"No profile match found, using tag directly: {userID}")
+        
+        # Set the profile
+        set_Profile()
+    except Exception as e:
+        logger.error(f"Error in set_UserID: {e}")
