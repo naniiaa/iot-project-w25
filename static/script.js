@@ -97,27 +97,13 @@ document.addEventListener('DOMContentLoaded', function() {
           if (rfidData.temperature_threshold) {
             document.getElementById('user_temp_threshold').textContent = rfidData.temperature_threshold;
             temperatureThreshold = rfidData.temperature_threshold;
-            
-            const tempThresholdElement = document.getElementById("TT");
-            if (tempThresholdElement) {
-              tempThresholdElement.textContent = `Temperature Threshold: ${temperatureThreshold} °C`;
-            }
           }
           
           if (rfidData.intensity_threshold) {
-            document.getElementById('user_light_threshold').textContent = rfidData.intensity_threshold;
+            // document.getElementById('user_light_threshold').textContent = rfidData.intensity_threshold;
             lightThreshold = rfidData.intensity_threshold;
-            
-            const lightThresholdElement = document.getElementById("LT");
-
-            if (lightThresholdElement) {
-              lightThresholdElement.textContent = `Light Threshold: ${lightThreshold}`;
-            }
-            
-            const thresholdValueElement = document.getElementById('threshold-value');
-            if (thresholdValueElement) {
-              thresholdValueElement.textContent = `${lightThreshold}`;
-            }
+            $('#threshold-value').text(lightThreshold);
+            $('#user_light_threshold').text(lightThreshold);
           }
         }
       } catch (error) {
@@ -198,17 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (userLightThresholdElement) {
               userLightThresholdElement.textContent = lightThreshold;
             }
-            
-            const ttElement = document.getElementById("TT");
-            if (ttElement) {
-              ttElement.textContent = `Temperature Threshold: ${temperatureThreshold} °C`;
-            }
-            
-            const ltElement = document.getElementById("LT");
-            if (ltElement) {
-              ltElement.textContent = `Light Threshold: ${lightThreshold}`;
-            }
-            
+
             const thresholdValueElement = document.getElementById("threshold-value");
             if (thresholdValueElement) {
               thresholdValueElement.textContent = lightThreshold;
