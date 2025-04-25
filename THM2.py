@@ -2,7 +2,7 @@ import time
 import Freenove_DHT as DHT
 import MotorFunction as Motor
 import EmailManager as EM
-from Profile_Manager import userTempThreshold
+from ProfileManager import userTempThreshold
 
 
 DHTPin = 4 # Define the pin of DHT11
@@ -21,6 +21,12 @@ def disableFan():
 
 def get_sensor_data():
     global email_sent, fan_on
+
+    if fan_on:
+        Motor.toggle(True)
+
+    else:
+        Motor.toggle(False)
 
     for i in range(0,15):
         # Read DHT11 sensor
