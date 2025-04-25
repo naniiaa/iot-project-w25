@@ -1,0 +1,3 @@
+sudo systemctl status mosquitto
+sudo systemctl restart mosquitto
+sudo systemctl start mosquitto
