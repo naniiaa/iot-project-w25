@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script src="../static/script.js" defer></script>
+  <link rel="stylesheet" href="../static/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Dashboard</title>
+</head>
+
+<body>
+  <div id="header">
+    <h3 class="header-title">IOT DASHBOARD</h3>
+    <img id="profile_img" class="profile-img" src="https://avatar.iran.liara.run/public/2" width="45" height="45" alt="Profile">
+  </div>
+
+
+
+  <div class="content">
+
+    <div id="content-bg"></div>
+    <div class="IOT-Dashboard">
+      
+      <div class="dashboard-component" id="graph-dashboard">      
+        <h4>Sensor History</h4>
+        <canvas id="myChart"></canvas>
+        <div class="component-bg"></div>
+      </div>
+
+      <div class="dashboard-component" id="temphum-dashboard">
+        <div class="temphum-dashboard-component TH" id="temperature-db">
+            <h4>Temperature</h4>
+            <div class="VisualDisplay_TH">
+                <div class="BarContainer" id="TemperatureMeter"></div>
+                <div class="MeterCounter" id="TemperatureMeterCounter">--°C</div>
+            </div>    
+        </div>
+        <div class="temphum-dashboard-component TH" id="humidity-db">
+            <h4>Humidity</h4>
+            <div class="VisualDisplay_TH">
+                <div class="BarContainer" id="HumidityMeter"></div>
+                <div class="MeterCounter" id="HumidityMeterCounter">--%</div>
+            </div>
+        </div>
+        <div class="component-bg"></div>
+      </div>
+      
+      <div class="dashboard-component" id="light-dashboard">
+        <h4>Light Intensity</h4>
+        
+        <div class="light-visualization">
+          <div class="light-bulb-container">
+            <img id="light-bulb-img" src="../static/LightOff.png" alt="Light Bulb" class="light-bulb">
+          </div>
+          <div class="light-data">
+            <p>Current Light Intensity: <span id="light-intensity">--</span></p>
+            <p>LED Status: <span id="led-status" class="off">OFF</span></p>
+            <p>Threshold: <span id="threshold-value"></span></p>
+          </div>
+        </div>
+        
+        <div class="light-meter-container">
+          <div class="light-meter">
+            <div class="meter-fill" id="light-meter-fill"></div>
+          </div>
+          <div class="meter-labels">
+            <span>Dark (0)</span>
+            <span>Bright (4000)</span>
+          </div>
+        </div>
+
+        <div class="component-bg"></div>
+      </div>
+
+      <div class="dashboard-component" id="fan-db">
+        <h4>Fan Control</h4>
+        <div id="fanContainer">
+          <img id="fanIcon" src="../static/FanOff.png" height="250" width="250" alt="Fan">
+        </div>
+        <div class="component-bg"></div>
+      </div>
+
+      <div class="dashboard-component" id="profile-db">
+        
+        <h4>User Profile & Notifications</h4>
+
+        <div class="profileComponent" id="user-profile">
+          <h4>User Profile</h4>
+          <div class="profile-info">
+            <div class="profile-image-container">
+              <img id="profile_image" class="profile-img" src="https://avatar.iran.liara.run/public/2" alt="Profile Image">
+            </div>
+            <div class="profile-details">
+              <p><strong>Username:</strong> <span id="profile_username">Default User</span></p>
+              <p><strong>RFID Tag:</strong> <span id="rfid_tag">--</span></p>
+              <p><strong>Last Entry:</strong> <span id="last_entry">--</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="profileComponent" id="ThresholdContainer">
+          <h4>User Thresholds</h4>
+          <p><strong>Temperature:</strong> <span id="user_temp_threshold">--</span> °C</p>
+          <p><strong>Light Intensity:</strong> <span id="user_light_threshold">--</span></p>
+        </div>
+
+        <div class="profileComponent" id="NotificationContainer">
+          <h4>Notifications</h4>
+          <!-- <p>Status: <span id="email-status">No email sent</span></p> -->
+          <div>
+            <div class="notif" id="TH_Notif">
+              <h4>Temperature/Humidity</h4>
+              <div id="mail_notif">
+                <img class="img_notif" id="th_img_n" src="../static/MailIdle.png" alt="Temperature Email">
+                <span class="notifSpan" id="thspannotif">No email sent</span>
+              </div>
+            </div>
+            <div class="notif" id="LED_Notif">
+              <h4>Light</h4>
+              <div id="mail_notif">
+                <img class="img_notif" id="led_img_n" src="../static/MailIdle.png" alt="Light Email">
+                <span class="notifSpan" id="ledspannotif">No email sent</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="component-bg"></div>
+      </div>
+    </div>
+  </div>
+</body>
