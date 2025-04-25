@@ -1,7 +1,8 @@
+var temperatureThreshold = 24;
+var lightThreshold = 2000;
+var currentProfile;
 document.addEventListener('DOMContentLoaded', function() {
-    var temperatureThreshold = 24;
-    var lightThreshold = 2000;
-    var currentProfile;
+
   
     let lastRFIDtag = "";
     var notif = document.getElementById("notif");

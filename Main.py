@@ -46,7 +46,7 @@ except Exception as e:
 def index():
     """Render the index html page"""
     logger.info("Serving index.html")
-    return render_template('index.html')
+    return render_template('indexv2.html')
 
 @app.route('/temp-hum')
 def get_TH_data():

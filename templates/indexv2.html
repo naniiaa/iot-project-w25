@@ -6,7 +6,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
   <script src="../static/script.js" defer></script>
-  <link rel="stylesheet" href="../static/styles.css">
+  <link rel="stylesheet" href="../static/stylesv2.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IoT Dashboard</title>
 </head>
@@ -17,12 +17,17 @@
     <img id="profile_img" class="profile-img" src="https://avatar.iran.liara.run/public/2" width="45" height="45" alt="Profile">
   </div>
 
+
+
   <div class="content">
+
+    <div id="content-bg"></div>
     <div class="IOT-Dashboard">
       
-      <div class="dashboard-component" id="graph-dashboard">
+      <div class="dashboard-component" id="graph-dashboard">      
         <h4>Sensor History</h4>
         <canvas id="myChart"></canvas>
+        <div class="component-bg"></div>
       </div>
 
       <div class="dashboard-component" id="temphum-dashboard">
@@ -40,6 +45,7 @@
                 <div class="MeterCounter" id="HumidityMeterCounter">--%</div>
             </div>
         </div>
+        <div class="component-bg"></div>
       </div>
       
       <div class="dashboard-component" id="light-dashboard">
@@ -52,7 +58,7 @@
           <div class="light-data">
             <p>Current Light Intensity: <span id="light-intensity">--</span></p>
             <p>LED Status: <span id="led-status" class="off">OFF</span></p>
-            <p>Threshold: <span id="threshold-value"></span></p>
+            <p>Default Threshold: <span id="threshold-value"></span></p>
           </div>
         </div>
         
@@ -65,6 +71,8 @@
             <span>Bright (4000)</span>
           </div>
         </div>
+
+        <div class="component-bg"></div>
       </div>
 
       <div class="dashboard-component" id="fan-db">
@@ -72,9 +80,11 @@
         <div id="fanContainer">
           <img id="fanIcon" src="../static/FanOff.png" height="250" width="250" alt="Fan">
         </div>
+        <div class="component-bg"></div>
       </div>
 
       <div class="dashboard-component" id="profile-db">
+        
         <h4>User Profile & Notifications</h4>
 
         <div class="profileComponent" id="user-profile">
@@ -86,7 +96,7 @@
             <div class="profile-details">
               <p><strong>Username:</strong> <span id="profile_username">Default User</span></p>
               <p><strong>RFID Tag:</strong> <span id="rfid_tag">--</span></p>
-              <!-- <p><strong>Last Entry:</strong> <span id="last_entry">--</span></p> -->
+             <!-- <p><strong>Last Entry:</strong> <span id="last_entry">--</span></p> -->
             </div>
           </div>
         </div>
@@ -117,6 +127,7 @@
             </div>
           </div>
         </div>
+        <div class="component-bg"></div>
       </div>
     </div>
   </div>

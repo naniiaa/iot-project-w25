@@ -18,7 +18,7 @@ logging.basicConfig(
 logger = logging.getLogger('rfid_manager')
 
 # MQTT Setup
-MQTT_BROKER = "10.0.0.230"  # MAtch this with ESP32
+MQTT_BROKER = "172.20.10.4"  # MAtch this with ESP32
 MQTT_PORT = 1883
 MQTT_TOPIC_RFID = "rfid/ID"
 
