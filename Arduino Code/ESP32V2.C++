@@ -84,8 +84,7 @@ void loop() {
   }
   delay(500);
 
-
-// RFID TYPE SHIT
+//RFID
   if (!rfid.PICC_IsNewCardPresent()) {
     return;
   }
